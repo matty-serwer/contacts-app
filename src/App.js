@@ -1,17 +1,16 @@
 import React, { Fragment, useState } from "react";
 import "./App.css";
 import { Button, Layout, Table, Menu } from "antd";
-import { PlusCircleOutlined } from "@ant-design/icons";
+import { PlusCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 import AddDrawer from "./AddDrawer";
 import { connect } from "react-redux";
-import { addContact } from "./redux/contacts/actions";
+import { addContact, deleteContact } from "./redux/contacts/actions";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
-const App = ({ contacts, addContact }) => {
+const App = ({ contacts, addContact, deleteContact }) => {
   const [showDrawer, setShowDrawer] = useState(false);
-  // const [values, setValues] = useState([]);
   const [error, setError] = useState({});
   const [collapsed, setCollapsed] = useState(false);
 
@@ -19,8 +18,6 @@ const App = ({ contacts, addContact }) => {
     console.log(isCollapsed);
     setCollapsed(isCollapsed);
   };
-
-  console.log(contacts);
 
   const handleAddFormOnFinish = (inputValues) => {
     addContact({
@@ -51,6 +48,15 @@ const App = ({ contacts, addContact }) => {
       dataIndex: "phoneNumber",
       key: "phoneNumber",
     },
+    {
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        <span>
+          <Button type='link' icon={<DeleteOutlined />} onClick={() => deleteContact(record.key)} />
+        </span>
+      )
+    }
   ];
 
   return (
@@ -112,4 +118,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { addContact })(App);
+export default connect(mapStateToProps, { addContact, deleteContact })(App);
