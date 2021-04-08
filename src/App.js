@@ -1,22 +1,17 @@
 import React, { Fragment, useState } from "react";
 import "./App.css";
-import { Button, Layout, Table, Menu, Breadcrumb } from "antd";
-import {
-  PlusCircleOutlined,
-  DesktopOutlined,
-  FileOutlined,
-  TeamOutlined,
-  UserOutlined,
-  PieChartOutlined,
-} from "@ant-design/icons";
+import { Button, Layout, Table, Menu } from "antd";
+import { PlusCircleOutlined } from "@ant-design/icons";
 import AddDrawer from "./AddDrawer";
+import { connect } from "react-redux";
+import { addContact } from "./redux/contacts/actions";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
-function App() {
+const App = ({ contacts, addContact }) => {
   const [showDrawer, setShowDrawer] = useState(false);
-  const [values, setValues] = useState([]);
+  // const [values, setValues] = useState([]);
   const [error, setError] = useState({});
   const [collapsed, setCollapsed] = useState(false);
 
@@ -25,16 +20,13 @@ function App() {
     setCollapsed(isCollapsed);
   };
 
+  console.log(contacts);
+
   const handleAddFormOnFinish = (inputValues) => {
-    setValues([
-      ...values,
-      {
-        key: values.length + 1,
-        firstName: inputValues.firstName,
-        lastName: inputValues.lastName,
-        phoneNumber: inputValues.phoneNumber,
-      },
-    ]);
+    addContact({
+      key: contacts.length + 1,
+      ...inputValues
+    })
     setError({});
     setShowDrawer(false);
   };
@@ -75,7 +67,13 @@ function App() {
             style={{ padding: 24, minHeight: 360 }}
           >
             <Fragment>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 20,
+                }}
+              >
                 <div></div>
                 <div>
                   <Button
@@ -89,7 +87,7 @@ function App() {
                 </div>
               </div>
               <Layout.Content>
-                <Table dataSource={values} columns={columns} />;
+                <Table dataSource={contacts} columns={columns} />;
               </Layout.Content>
               <AddDrawer
                 show={showDrawer}
@@ -106,6 +104,12 @@ function App() {
       </Layout>
     </Layout>
   );
-}
+};
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    contacts: state.contacts.allContacts,
+  };
+};
+
+export default connect(mapStateToProps, { addContact })(App);
